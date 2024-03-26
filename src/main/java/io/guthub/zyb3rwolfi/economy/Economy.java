@@ -26,6 +26,7 @@ public final class Economy extends JavaPlugin {
         }
 
         getCommand("balance").setExecutor(new ShowBalance(this));
+        getCommand("add").setExecutor(new AddMoney(this));
         getServer().getPluginManager().registerEvents(new OnPlayerJoin(this), this);
 
     }

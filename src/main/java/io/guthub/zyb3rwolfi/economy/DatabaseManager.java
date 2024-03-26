@@ -53,4 +53,19 @@ public class DatabaseManager {
             return 1;
         }
     }
+
+    public void addMonetToPlayer(Player player, int amount) {
+        try {
+            int money = getPlayerBalance(player);
+            money += amount;
+            try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE players SET money = ? WHERE uuid = ? ")) {
+                preparedStatement.setString(2, player.getUniqueId().toString());
+                preparedStatement.setInt(1, money);
+                preparedStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error");
+        }
+    }
 }

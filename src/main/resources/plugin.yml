@@ -7,3 +7,6 @@ commands:
   balance:
     description: Shows you your balance
     usage: /balance
+  add:
+    description: Adds money to player
+    usage: /add
