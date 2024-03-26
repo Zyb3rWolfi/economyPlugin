@@ -1,0 +1,9 @@
+name: economy
+version: '${version}'
+main: io.guthub.zyb3rwolfi.economy.Economy
+api-version: '1.20'
+
+commands:
+  balance:
+    description: Shows you your balance
+    usage: /balance
