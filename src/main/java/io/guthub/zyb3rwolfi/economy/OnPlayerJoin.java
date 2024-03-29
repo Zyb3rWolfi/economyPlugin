@@ -10,17 +10,22 @@ import java.sql.SQLException;
 public class OnPlayerJoin  implements Listener {
 
     private Economy economy;
-    public OnPlayerJoin(Economy economy) {
-        this.economy = economy;
+    private int startingBalance;
+    public OnPlayerJoin(Economy economy, int startingBalance) {
+        this.economy = economy; this.startingBalance = startingBalance;
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
         Player player = event.getPlayer();
         try {
-            economy.getDatabaseManager().addPlayerToDB(player);
+            economy.getDatabaseManager().addPlayerToDB(player, startingBalance);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e);
         }
+
+
+
     }
 }

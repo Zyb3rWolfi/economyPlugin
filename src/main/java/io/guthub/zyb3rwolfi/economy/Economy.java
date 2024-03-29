@@ -1,20 +1,25 @@
 package io.guthub.zyb3rwolfi.economy;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class Economy extends JavaPlugin {
 
     private Connection connection;
     private DatabaseManager databaseManager;
+    private String prefix;
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        saveResource("config.yml", false);
+        saveDefaultConfig();
+        int startingBalance = getConfig().getInt("starting_balance");
+        prefix = getConfig().getString("prefix");
+
         try {
             if (!getDataFolder().exists()) {
                 getDataFolder().mkdir();
@@ -26,8 +31,10 @@ public final class Economy extends JavaPlugin {
         }
 
         getCommand("balance").setExecutor(new ShowBalance(this));
-        getCommand("add").setExecutor(new AddMoney(this));
-        getServer().getPluginManager().registerEvents(new OnPlayerJoin(this), this);
+        getCommand("set").setExecutor(new SetMoney(this));
+        getCommand("give").setExecutor(new GiveMoney(this));
+        getCommand("baltop").setExecutor(new TopBalance(this));
+        getServer().getPluginManager().registerEvents(new OnPlayerJoin(this, startingBalance), this);
 
     }
 
@@ -38,5 +45,10 @@ public final class Economy extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    public void sendMessage(String message, Player player) {
+        String msg = prefix + message;
+        player.sendMessage(msg);
     }
 }

@@ -43,17 +43,28 @@ public class DatabaseManager {
         }
     }
 
-    public int addPlayerToDB(Player player) throws SQLException {
+    public int addPlayerToDB(Player player, int startingBalance) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO players VALUES (? , ?, ?)")) {
             preparedStatement.setString(1, player.getUniqueId().toString());
-            preparedStatement.setString(2, player.displayName().toString());
-            preparedStatement.setInt(3, 0);
+            preparedStatement.setString(2, player.getName());
+            preparedStatement.setInt(3, startingBalance);
             preparedStatement.executeUpdate();
 
             return 1;
         }
     }
+    public void setPlayerMoney(Player player, int amount) {
+        try {
+            try(PreparedStatement preparedStatement = connection.prepareStatement("UPDATE players SET money = ? WHERE uuid = ? ")) {
+                preparedStatement.setString(2, player.getUniqueId().toString());
+                preparedStatement.setInt(1, amount);
+                preparedStatement.executeUpdate();
+            }
 
+        } catch (SQLException e) {
+            System.out.println("Error");
+        }
+    }
     public void addMonetToPlayer(Player player, int amount) {
         try {
             int money = getPlayerBalance(player);
@@ -68,4 +79,52 @@ public class DatabaseManager {
             System.out.println("Error");
         }
     }
+
+    public void giveMoneyToPlayer(Player player, Player givePlayer, int amount) throws SQLException {
+
+        try{
+            try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT money FROM players WHERE uuid = ?")) {
+                preparedStatement.setString(1, player.getUniqueId().toString());
+                ResultSet playerMoney = preparedStatement.executeQuery();
+
+                if (playerMoney.next()) {
+                    int money = playerMoney.getInt("money");
+                    money -= amount;
+
+                    try(PreparedStatement preparedStatement1 = connection.prepareStatement("UPDATE players SET money = ? WHERE uuid = ?")) {
+                        preparedStatement1.setInt(1, money);
+                        preparedStatement1.setString(2, player.getUniqueId().toString());
+                        preparedStatement1.executeUpdate();
+
+                        int givenPlayerMoney = getPlayerBalance(givePlayer);
+                        givenPlayerMoney += amount;
+                        addMonetToPlayer(givePlayer, givenPlayerMoney);
+                    }
+
+                } else {
+                    return;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e);
+        }
+
+    }
+
+    public StringBuilder getTopBalance() throws SQLException {
+        StringBuilder results = new StringBuilder("");
+        int rank = 0;
+        try (PreparedStatement statement = connection.prepareStatement("SELECT username, money FROM players ORDER BY money DESC LIMIT ?")) {
+            statement.setInt(1, 10);
+            ResultSet resultSeresults = statement.executeQuery();
+
+            while (resultSeresults.next()) {
+                rank += 1;
+                results.append( rank + " - " + resultSeresults.getString("username")).append(" ").append(resultSeresults.getInt("money") + " \n");
+            }
+            return results;
+        }
+    }
+
 }

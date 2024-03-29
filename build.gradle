@@ -37,7 +37,7 @@ tasks.withType(JavaCompile).configureEach {
         options.release.set(targetJavaVersion)
     }
 }
-def distDir = file("C:/Users/Zyb3rWolfi/Desktop/wildtp/run/plugins")
+def distDir = file("C:/Users/Zyb3rWolfi/Desktop/Server/plugins")
 
 processResources {
     def props = [version: version]

@@ -25,8 +25,8 @@ public class ShowBalance implements CommandExecutor {
 
         int money = getBalanceFromDB(player);
 
-        player.sendMessage("Your balance: " + money);
 
+        economy.sendMessage("Your balance: " + money, player);
         return true;
     }
 
